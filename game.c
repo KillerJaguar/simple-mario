@@ -894,7 +894,7 @@ void player_draw( void )
 
 /************************************************************/
 
-void handleEvent( SDL_Event * event )
+void game_handleEvent( SDL_Event * event )
 {
 	/* press any key is visible */
 	if ( g_Player.lives < 0 && !Mix_PlayingMusic() && event->type == SDL_KEYDOWN )
@@ -958,7 +958,7 @@ void handleEvent( SDL_Event * event )
 	}
 }
 
-void update( unsigned deltaTick )
+void game_update( unsigned deltaTick )
 {
 	/* play the music */
 	if ( !g_Player.dead && g_Player.lives >= 0 )
@@ -998,7 +998,7 @@ void update( unsigned deltaTick )
 	}
 }
 
-void draw( void )
+void game_draw( void )
 {
 	int i;
 	if ( g_displayLevelText ) /* display the name of the current level */
