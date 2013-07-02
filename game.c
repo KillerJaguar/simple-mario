@@ -31,29 +31,29 @@ static const int MAX_PLAYER_LIVES		= 5;
 
 /* resources */
 
-static SDL_Surface *g_imgTileset 		= NULL;
-static SDL_Surface *g_imgPlayer 		= NULL;
-static SDL_Surface *g_imgEnemy 		= NULL;
-static SDL_Surface *g_imgBG 			= NULL;
-static SDL_Surface *g_imgLives 		= NULL;
-static SDL_Surface *g_imgGameOver		= NULL;
+static SDL_Surface * g_imgTileset 		= NULL;
+static SDL_Surface * g_imgPlayer 		= NULL;
+static SDL_Surface * g_imgEnemy 		= NULL;
+static SDL_Surface * g_imgBG 			= NULL;
+static SDL_Surface * g_imgLives 		= NULL;
+static SDL_Surface * g_imgGameOver		= NULL;
 
-static TTF_Font *g_fontSmall			= NULL;
-static TTF_Font *g_fontLarge			= NULL;
+static TTF_Font * g_fontSmall			= NULL;
+static TTF_Font * g_fontLarge			= NULL;
 
-static SDL_Surface *g_textLives		= NULL;
-static SDL_Surface *g_textScore		= NULL;
-static SDL_Surface *g_textCoins		= NULL;
-static SDL_Surface *g_textLevel		= NULL;
-static SDL_Surface *g_textPressAnyKey	= NULL;
+static SDL_Surface * g_textLives		= NULL;
+static SDL_Surface * g_textScore		= NULL;
+static SDL_Surface * g_textCoins		= NULL;
+static SDL_Surface * g_textLevel		= NULL;
+static SDL_Surface * g_textPressAnyKey	= NULL;
 
-static Mix_Music *g_musBGM			= NULL;
-static Mix_Music *g_musDeath			= NULL;
-static Mix_Music *g_musGameOver		= NULL;
-static Mix_Chunk *g_sfxCoin			= NULL;
-static Mix_Chunk *g_sfxJump			= NULL;
-static Mix_Chunk *g_sfxStomp			= NULL;
-static Mix_Chunk *g_sfx1Up			= NULL;
+static Mix_Music * g_musBGM			= NULL;
+static Mix_Music * g_musDeath			= NULL;
+static Mix_Music * g_musGameOver		= NULL;
+static Mix_Chunk * g_sfxCoin			= NULL;
+static Mix_Chunk * g_sfxJump			= NULL;
+static Mix_Chunk * g_sfxStomp			= NULL;
+static Mix_Chunk * g_sfx1Up			= NULL;
 
 /* global variables */
 
@@ -65,7 +65,7 @@ int reset( void );
 
 /************************************************************/
 
-typedef enum e_Direction
+typedef enum Direction
 {
 	UP = 0,
 	DOWN,
@@ -86,30 +86,30 @@ Direction dir_getOpposite( Direction d )
 
 /************************************************************/
 
-typedef struct s_CoinController
+typedef struct CoinController
 {
 	int count;		/* number of coins */
 	int size;			/* size of array */
-	int *array;		/* coin pos array */
+	int * array;		/* coin pos array */
 } CoinController;
 
-void cc_init( CoinController *cc )
+void cc_init( CoinController * cc )
 {
 	cc->count = 0;
 	cc->size 	= 10; /* arbitrary number */
-	cc->array = (int*) calloc( cc->size, sizeof( int ) );
+	cc->array = (int *) calloc( cc->size, sizeof( int ) );
 	
 	int i;
 	for ( i = 0; i < cc->size; i++ )
 		cc->array[i] = -1;
 }
 
-void cc_cleanup( CoinController *cc )
+void cc_cleanup( CoinController * cc )
 {	
 	free( cc->array );
 }
 
-void cc_addCoin( CoinController *cc, int index )
+void cc_addCoin( CoinController * cc, int index )
 {
 	/* check for available space */
 	if ( cc->count == cc->size )
@@ -128,32 +128,32 @@ void cc_addCoin( CoinController *cc, int index )
 
 /************************************************************/
 
-typedef struct s_MovingPlatform
+typedef struct MovingPlatform
 {
 	int startPos;			/* starting position */
 	float x, y;			/* position of platform */
 	Direction dir;			/* direction to move in */
 } MovingPlatform;
 
-typedef struct s_MovingPlatformController
+typedef struct MovingPlatformController
 {
 	int count;			/* number of active platforms */
 	int size;				/* size of platform array */
-	MovingPlatform **array;	/* moving platform array */
+	MovingPlatform ** array;	/* moving platform array */
 } MovingPlatformController;
 
-void mpc_init( MovingPlatformController *mpc )
+void mpc_init( MovingPlatformController * mpc )
 {
 	mpc->count = 0;
 	mpc->size = 10; /* arbitrary number */
-	mpc->array = (MovingPlatform**) realloc( NULL, sizeof( MovingPlatform* ) * mpc->size );
+	mpc->array = (MovingPlatform **) realloc( NULL, sizeof( MovingPlatform * ) * mpc->size );
 	
 	int i;
 	for ( i = 0; i < mpc->size; i++ )
 		mpc->array[i] = NULL;
 }
 
-void mpc_cleanup( MovingPlatformController *mpc )
+void mpc_cleanup( MovingPlatformController * mpc )
 {
 	int i;
 	for ( i = 0; i < mpc->size; i++ )
@@ -161,14 +161,14 @@ void mpc_cleanup( MovingPlatformController *mpc )
 	free( mpc->array );
 }
 
-void mpc_addPlatform( MovingPlatformController *mpc, int i, Direction d )
+void mpc_addPlatform( MovingPlatformController * mpc, int i, Direction d )
 {
 	/* check for available space */
 	if ( mpc->count == mpc->size )
 	{
 		/* realloc the array */
 		mpc->size *= 2;
-		mpc->array = (MovingPlatform**) realloc( mpc->array, sizeof( MovingPlatform* ) * mpc->size );
+		mpc->array = (MovingPlatform **) realloc( mpc->array, sizeof( MovingPlatform * ) * mpc->size );
 		
 		int i;
 		for ( i = mpc->count; i < mpc->size; i++ )
@@ -176,7 +176,7 @@ void mpc_addPlatform( MovingPlatformController *mpc, int i, Direction d )
 	}
 	
 	/* create a new platform */
-	MovingPlatform *mp = (MovingPlatform*) malloc( sizeof( MovingPlatform ) );
+	MovingPlatform * mp = (MovingPlatform *) malloc( sizeof( MovingPlatform ) );
 	mp->x 	= i % ( SCREEN_WIDTH / TILE_WIDTH ) * TILE_WIDTH;
 	mp->y 	= i / ( SCREEN_WIDTH / TILE_WIDTH ) * TILE_HEIGHT;
 	mp->dir 	= d;
@@ -186,12 +186,12 @@ void mpc_addPlatform( MovingPlatformController *mpc, int i, Direction d )
 	mpc->array[ mpc->count++ ] = mp;
 }
 
-void mpc_reset( MovingPlatformController *mpc )
+void mpc_reset( MovingPlatformController * mpc )
 {
 	int i;
 	for ( i = 0; i < mpc->count; i++ )
 	{
-		MovingPlatform *mp = mpc->array[i];
+		MovingPlatform * mp = mpc->array[i];
 		if ( mp == NULL ) continue;
 		
 		mp->x = mp->startPos % ( SCREEN_WIDTH / TILE_WIDTH ) * TILE_WIDTH;
@@ -213,14 +213,14 @@ void mpc_reset( MovingPlatformController *mpc )
 
 /************************************************************/
 
-typedef enum e_JumpState
+typedef enum JumpState
 {
 	CAN_JUMP,
 	JUMPING,
 	JUMPED
 } JumpState;
 
-static struct s_Player
+static struct Player
 {
 	float x, y;			/* position of player */
 	float xVel, yVel;		/* velocity of player */
@@ -240,17 +240,17 @@ static struct s_Player
 
 /************************************************************/
 
-typedef struct s_Map
+typedef struct Map
 {
-	char *data;					/* map data */
+	char * data;					/* map data */
 	int startPos;					/* starting position */
 	CoinController cc;				/* coins */
 	MovingPlatformController mpc;		/* moving platforms */
 } Map;
 
-static Map *g_Map = NULL;
+static Map * g_Map = NULL;
 
-void map_cleanup( Map *map )
+void map_cleanup( Map * map )
 {
 	if ( map == NULL ) return;
 
@@ -279,10 +279,10 @@ void map_change( void )
 	timer_reset( &g_utilTimer );
 }
 
-int map_load( char *filename )
+int map_load( char * filename )
 {
-	FILE *fp = NULL;
-	char *data = NULL, next;
+	FILE * fp = NULL;
+	char * data = NULL, next;
 	int i, num_tiles = NUM_TILES;
 	
 	fp = fopen( filename, "r" );
@@ -292,7 +292,7 @@ int map_load( char *filename )
 		return 1;
 	}
 	
-	Map *map = (Map*) malloc( sizeof( Map ) );
+	Map * map = (Map *) malloc( sizeof( Map ) );
 	mpc_init( &map->mpc );
 	cc_init( &map->cc );
 	map->data = (char*) calloc( num_tiles, sizeof( char ) );
@@ -434,7 +434,7 @@ void map_draw( void )
 
 /************************************************************/
 
-typedef enum e_Animation
+typedef enum Animation
 {
 	PLAYER_IDLE_LEFT,
 	PLAYER_IDLE_RIGHT,
@@ -503,7 +503,7 @@ SDL_Rect anim_getRect( Animation anim, int frame )
 
 void cc_update( void )
 {
-	CoinController *cc = &g_Map->cc;
+	CoinController * cc = &g_Map->cc;
 	SDL_Rect player = rect( g_Player.x, g_Player.y, PLAYER_WIDTH, PLAYER_HEIGHT );
 
 	int i;	
@@ -532,7 +532,7 @@ void cc_update( void )
 
 void cc_draw( void )
 {
-	CoinController *cc = &g_Map->cc;
+	CoinController * cc = &g_Map->cc;
 
 	int i;
 	for ( i = 0; i < cc->count; i++ )
@@ -549,7 +549,7 @@ void cc_draw( void )
 
 /************************************************************/
 
-int mp_update( MovingPlatform *mp, unsigned deltaTicks )
+int mp_update( MovingPlatform * mp, unsigned deltaTicks )
 {	
      SDL_Rect r = rect( mp->x, mp->y, TILE_WIDTH, TILE_HEIGHT );
      int precheck = ( g_Player.onPlatform && ( 
@@ -610,7 +610,7 @@ int mp_update( MovingPlatform *mp, unsigned deltaTicks )
      return 0;
 }
 
-void mp_draw( MovingPlatform *mp )
+void mp_draw( MovingPlatform * mp )
 {
 	SDL_Rect PLATFORM_RECT = map_getTileRect( 5, 9 );
 	drawImage( g_imgTileset, &PLATFORM_RECT, mp->x, mp->y );
@@ -618,12 +618,13 @@ void mp_draw( MovingPlatform *mp )
 
 void mpc_update( unsigned deltaTicks )
 {
-	MovingPlatformController *mpc = &g_Map->mpc;
+	MovingPlatformController * mpc = &g_Map->mpc;
 
 	int i, onPlatform = 0;
 	for ( i = 0; i < mpc->count; i++ )
 		if ( mpc->array[i] != NULL )
 			onPlatform = mp_update( mpc->array[i], deltaTicks ) || onPlatform;
+			
 	if ( g_Player.onPlatform = onPlatform )
 	{
 	     g_Player.jump = CAN_JUMP;
@@ -633,7 +634,7 @@ void mpc_update( unsigned deltaTicks )
 
 void mpc_draw( void )
 {
-	MovingPlatformController *mpc = &g_Map->mpc;
+	MovingPlatformController * mpc = &g_Map->mpc;
 
 	int i;
 	for ( i = 0; i < mpc->count; i++ )
@@ -892,7 +893,7 @@ void player_draw( void )
 
 /************************************************************/
 
-void handleEvent( SDL_Event* event )
+void handleEvent( SDL_Event * event )
 {
 	/* press any key is visible */
 	if ( g_Player.lives < 0 && !Mix_PlayingMusic() && event->type == SDL_KEYDOWN )
@@ -904,7 +905,7 @@ void handleEvent( SDL_Event* event )
 	/* do not continue if player is dead or displaying level text */
 	if ( g_Player.dead || g_displayLevelText ) return;
 
-	Uint8 *keystate = SDL_GetKeyState( NULL );
+	Uint8 * keystate = SDL_GetKeyState( NULL );
 
 	if ( event->type == SDL_KEYDOWN )
 	{

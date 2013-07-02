@@ -7,21 +7,21 @@ const int SCREEN_BPP 				= 32;
 
 static const int FRAMES_PER_SECOND 	= 60;
 
-void ( *g_handleEventsFn )( SDL_Event* ) = NULL;
-void ( *g_updateFn )( unsigned )		 = NULL;
-void ( *g_drawFn )( void )			 = NULL;
+void ( *g_handleEventsFn )( SDL_Event * ) 	= NULL;
+void ( *g_updateFn )( unsigned )		 	= NULL;
+void ( *g_drawFn )( void )			 	= NULL;
 
-int g_Running						= 1;
+int g_Running							= 1;
 
-static SDL_Surface *g_Screen 			= NULL;
+static SDL_Surface * g_Screen 			= NULL;
 static char g_WinCaption[30];
 
 /************************************************************/
 
-SDL_Surface *loadImage( char *filename )
+SDL_Surface * loadImage( char * filename )
 {
-	SDL_Surface *image = SDL_LoadBMP( filename );
-	SDL_Surface *optimized = NULL;
+	SDL_Surface * image = SDL_LoadBMP( filename );
+	SDL_Surface * optimized = NULL;
 	
 	if ( image != NULL )
 	{
@@ -41,9 +41,9 @@ SDL_Surface *loadImage( char *filename )
 	return optimized;
 }
 
-TTF_Font *loadFont( char *filename, int ptsize )
+TTF_Font * loadFont( char * filename, int ptsize )
 {
-	TTF_Font *font = TTF_OpenFont( filename, ptsize );
+	TTF_Font * font = TTF_OpenFont( filename, ptsize );
 	
 	int loaded = font != NULL;
 	fprintf( loaded ? stdout : stderr, "%s: %s\n", loaded ? "Loaded font" : TTF_GetError(), filename );
@@ -51,9 +51,9 @@ TTF_Font *loadFont( char *filename, int ptsize )
 	return font;
 }
 
-Mix_Chunk *loadSound( char *filename )
+Mix_Chunk *loadSound( char * filename )
 {
-	Mix_Chunk *sfx = Mix_LoadWAV( filename );
+	Mix_Chunk * sfx = Mix_LoadWAV( filename );
 	
 	int loaded = sfx != NULL;
 	fprintf( loaded ? stdout : stderr, "%s: %s\n", loaded ? "Loaded sound" : SDL_GetError(), filename );
@@ -61,9 +61,9 @@ Mix_Chunk *loadSound( char *filename )
 	return sfx;
 }
 
-Mix_Music *loadMusic( char *filename )
+Mix_Music * loadMusic( char * filename )
 {
-	Mix_Music *mus = Mix_LoadMUS( filename );
+	Mix_Music * mus = Mix_LoadMUS( filename );
 	
 	int loaded = mus != NULL;
 	fprintf( loaded ? stdout : stderr, "%s: %s\n", loaded ? "Loaded music" : SDL_GetError(), filename );
@@ -73,7 +73,7 @@ Mix_Music *loadMusic( char *filename )
 
 /************************************************************/
 
-void drawImage( SDL_Surface *source, SDL_Rect *subrect, int x, int y )
+void drawImage( SDL_Surface * source, SDL_Rect * subrect, int x, int y )
 {
 	SDL_Rect rect;
 	rect.x = x;
@@ -87,7 +87,7 @@ void drawRect( SDL_Rect rect, char r, char g, char b, char a )
 	SDL_FillRect( g_Screen, &rect, SDL_MapRGBA( g_Screen->format, r, g, b, a ) );
 }
 
-void playSound( Mix_Chunk* sfx )
+void playSound( Mix_Chunk * sfx )
 {
 	Mix_PlayChannel( -1, sfx, 0 );
 }
@@ -116,19 +116,19 @@ int rect_intersect( SDL_Rect a, SDL_Rect b )
 
 /************************************************************/
 
-void sprite_draw( Sprite *sprite, int x, int y )
+void sprite_draw( Sprite * sprite, int x, int y )
 {
 	drawImage( sprite->image, &sprite->rect, x, y );
 }
 
 /************************************************************/
 
-int timer_getElapsedTime( Timer *timer )
+int timer_getElapsedTime( Timer * timer )
 {
 	return SDL_GetTicks() - timer->tick;
 }
 
-int timer_update( Timer *timer )
+int timer_update( Timer * timer )
 {
 	if ( timer->tick + timer->interval < SDL_GetTicks() )
 	{
@@ -138,7 +138,7 @@ int timer_update( Timer *timer )
 	return 0;
 }
 
-void timer_reset( Timer *timer )
+void timer_reset( Timer * timer )
 {
 	timer->tick = SDL_GetTicks();
 }
@@ -191,7 +191,7 @@ void clean_up( void )
 
 /************************************************************/
 
-int main( int argc, char** argv )
+int main( int argc, char ** argv )
 {
 	int errc = 0;
 	if ( ( errc = init() ) != 0 )
