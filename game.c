@@ -16,14 +16,14 @@ static const int PLAYER_HEIGHT		= 28;
 
 /* note: move speeds are in pixel-per-second */
 
-static const int PLAYER_MOVE_SPEED 	= 32;
-static const int PLAYER_JUMP_SPEED		= 64;
-static const int PLAYER_FALL_SPEED		= 64;
+static const int PLAYER_MOVE_SPEED 	= 16;
+static const int PLAYER_JUMP_SPEED		= 32;
+static const int PLAYER_FALL_SPEED		= 32;
 
-static const int PLAYER_MAX_JUMP_SPEED 	= 640;
-static const int PLAYER_MAX_MOVE_SPEED  = 386;
+static const int PLAYER_MAX_JUMP_SPEED 	= 320;
+static const int PLAYER_MAX_MOVE_SPEED  = 288;
 
-static const int PLATFORM_MOVE_SPEED 	= 64;
+static const int PLATFORM_MOVE_SPEED 	= 48;
 
 static const int COINS_PER_LIFE		= 25;
 static const int INIT_PLAYER_LIVES		= 2;

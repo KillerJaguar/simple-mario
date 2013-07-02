@@ -51,7 +51,7 @@ TTF_Font * loadFont( char * filename, int ptsize )
 	return font;
 }
 
-Mix_Chunk *loadSound( char * filename )
+Mix_Chunk * loadSound( char * filename )
 {
 	Mix_Chunk * sfx = Mix_LoadWAV( filename );
 	
@@ -225,13 +225,15 @@ int main( int argc, char ** argv )
 			else
 				(*handleEventsFn)( &event );
 		}
-		(*updateFn)( timer_getElapsedTime( &delta ) );
+		
+		int tick = timer_getElapsedTime( &delta );
+		(*updateFn)( tick );
+		timer_reset( &delta );
+		
 		(*drawFn)();
 		
 		/* update the screen */
 		SDL_Flip( g_Screen );
-		
-		delta.tick = SDL_GetTicks();
 		
 		/* frame rate control */
 		if ( nextTick > SDL_GetTicks() )
@@ -242,7 +244,7 @@ int main( int argc, char ** argv )
 		/* if 1 second passed, update the frame rate counter */
 		if ( timer_update( &FPStimer ) )
 		{
-			sprintf( g_WinCaption, "Mario Tangent -- %d FPS", fps );
+			sprintf( g_WinCaption, "Mario Tangent -- %d FPS (%d)", fps, tick );
 			SDL_WM_SetCaption( g_WinCaption, NULL );
 			fps = 0;
 		}
