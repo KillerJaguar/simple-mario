@@ -28,6 +28,7 @@ static const int PLATFORM_MOVE_SPEED 	= 48;
 static const int COINS_PER_LIFE		= 25;
 static const int INIT_PLAYER_LIVES		= 2;
 static const int MAX_PLAYER_LIVES		= 5;
+static const int PLAYER_FRAME_TIME		= 50;
 
 /* resources */
 
@@ -658,7 +659,7 @@ void player_init( void )
 	g_Player.dead = 0;
 	g_Player.frame = 0;
 	g_Player.frameTimer.tick = 0;
-	g_Player.frameTimer.interval = 80;
+	g_Player.frameTimer.interval = PLAYER_FRAME_TIME;
 	g_Player.sprite.image = g_imgPlayer;
 	g_Player.jump = CAN_JUMP;
 	g_Player.onPlatform = 0;
