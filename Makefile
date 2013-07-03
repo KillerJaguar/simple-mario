@@ -1,4 +1,4 @@
-CXXFLAGS=-std=c89 -ansi
+CXXFLAGS=-std=c89 -ansi -Wall
 CPPFLAGS=-I../tmx-parser
 LDFLAGS=-lSDL -lSDL_mixer -lSDL_ttf
 SOURCES=$(wildcard *.c)

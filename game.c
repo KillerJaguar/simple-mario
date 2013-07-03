@@ -78,6 +78,7 @@ Direction dir_getOpposite( Direction d )
 {
 	switch ( d )
 	{
+		default:
 		case UP:		return DOWN;
 		case DOWN:	return UP;
 		case LEFT:	return RIGHT;
@@ -260,30 +261,10 @@ void map_cleanup( Map * map )
 	free( map->data );
 }
 
-void map_change( void )
-{
-	if ( ++g_curLevel > 9 ) 
-		g_curLevel = 1;
-	
-	char str[20];
-	
-	/* format the string for display */
-	sprintf( str, "Level %d", g_curLevel );
-	FreeSurface( g_textLevel );
-	g_textLevel = TTF_RenderText_Solid( g_fontLarge, str, (SDL_Color) { 0xFF, 0xFF, 0xFF } );
-	
-	/* format the string for loading */
-	sprintf( str, "levels/level%d", g_curLevel );
-	map_load( str );
-	
-	g_displayLevelText = 1;
-	timer_reset( &g_utilTimer );
-}
-
 int map_load( char * filename )
 {
 	FILE * fp = NULL;
-	char * data = NULL, next;
+	char next;
 	int i, num_tiles = NUM_TILES;
 	
 	fp = fopen( filename, "r" );
@@ -370,6 +351,26 @@ int map_load( char * filename )
 	return 1;
 }
 
+void map_change( void )
+{
+	if ( ++g_curLevel > 9 ) 
+		g_curLevel = 1;
+	
+	char str[20];
+	
+	/* format the string for display */
+	sprintf( str, "Level %d", g_curLevel );
+	FreeSurface( g_textLevel );
+	g_textLevel = TTF_RenderText_Solid( g_fontLarge, str, (SDL_Color) { 0xFF, 0xFF, 0xFF } );
+	
+	/* format the string for loading */
+	sprintf( str, "levels/level%d", g_curLevel );
+	map_load( str );
+	
+	g_displayLevelText = 1;
+	timer_reset( &g_utilTimer );
+}
+
 char map_getTile( int x, int y )
 {
 	return g_Map->data[ y * ( SCREEN_WIDTH / TILE_WIDTH ) + x ];
@@ -447,8 +448,6 @@ typedef enum Animation
 	PLAYER_DUCK_RIGHT,
 	PLAYER_TURN_LEFT,
 	PLAYER_TURN_RIGHT,
-	ENEMY_MOVE_LEFT,
-	ENEMY_MOVE_RIGHT
 } Animation;
 
 SDL_Rect anim_getRect( Animation anim, int frame )
@@ -626,7 +625,7 @@ void mpc_update( unsigned deltaTicks )
 		if ( mpc->array[i] != NULL )
 			onPlatform = mp_update( mpc->array[i], deltaTicks ) || onPlatform;
 			
-	if ( g_Player.onPlatform = onPlatform )
+	if ( ( g_Player.onPlatform = onPlatform ) )
 	{
 	     g_Player.jump = CAN_JUMP;
 	     g_Player.yVel = 0;
@@ -841,8 +840,8 @@ void player_update( unsigned deltaTicks )
 	
 	     /* rightward tile collision */
 	     else if ( map_checkCollision( xNew + PLAYER_WIDTH, g_Player.y + HALF_PLAYER_HEIGHT ) || /* check mid-right, or */
-		     ( g_Player.yVel < 0 && map_checkCollision( xNew + PLAYER_WIDTH, g_Player.y + PLAYER_HEIGHT ) || /* if falling, check bot-right; or */
-		     ( g_Player.yVel > 0 && map_checkCollision( xNew + PLAYER_WIDTH, g_Player.y ) ) ) ) /* if rising, check top-right */
+		     ( g_Player.yVel < 0 && map_checkCollision( xNew + PLAYER_WIDTH, g_Player.y + PLAYER_HEIGHT ) ) || /* if falling, check bot-right; or */
+		     ( g_Player.yVel > 0 && map_checkCollision( xNew + PLAYER_WIDTH, g_Player.y ) ) ) /* if rising, check top-right */
 	     {
 		     xNew = ( xNew / TILE_WIDTH ) * TILE_WIDTH;
 		     g_Player.xVel = 0;
@@ -906,8 +905,6 @@ void game_handleEvent( SDL_Event * event )
 	/* do not continue if player is dead or displaying level text */
 	if ( g_Player.dead || g_displayLevelText ) return;
 
-	Uint8 * keystate = SDL_GetKeyState( NULL );
-
 	if ( event->type == SDL_KEYDOWN )
 	{
 		switch ( event->key.keysym.sym )
@@ -936,6 +933,7 @@ void game_handleEvent( SDL_Event * event )
 			case SDLK_z:
 				map_change(); 
 			break;
+			default: break;
 		}
 	}
 	else if ( event->type == SDL_KEYUP )
@@ -954,6 +952,7 @@ void game_handleEvent( SDL_Event * event )
 			case SDLK_RIGHT:
 			     g_Player.keyPressed[RIGHT] = 0;
 			break;
+			default: break;
 		}
 	}
 }
