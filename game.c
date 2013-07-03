@@ -1135,9 +1135,9 @@ int game_setState( void )
 	if ( reset() == -1 )
 		return -1;
 	
-	g_handleEventsFn 	= &handleEvent;
-	g_updateFn 		= &update;
-	g_drawFn 			= &draw;
+	g_handleEventsFn 	= &game_handleEvent;
+	g_updateFn 		= &game_update;
+	g_drawFn 			= &game_draw;
 	
 	return 0;
 }
